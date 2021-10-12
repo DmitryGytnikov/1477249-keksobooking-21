@@ -1,8 +1,30 @@
 'use strict';
 
-const MAP = `.map`;
+const MAP = document.querySelector(`.map`);
 const MAP_TUMBLER = `map--faded`;
 const MAP_PINS = document.querySelector(`.map__pins`);
+const MAP_PIN_MAIN = document.querySelector(`.map__pin--main`);
+const MAP_FILTERS = document.querySelector(`.map__filters`);
+const MAP_FILTERS_CHILDS = Array.from(MAP_FILTERS.children);
+const AD_FORM = document.querySelector(`.ad-form`);
+const AD_FORM_FILDSETS = Array.from(AD_FORM.querySelectorAll(`.ad-form > fieldset`));
+const AD_FORM_TUMBLER = `ad-form--disabled`;
+const AD_FORM_MIN_PRICE = {
+  bungalow: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
+const ROOMS_FOR_GUESTS = {
+  1: [`1`],
+  2: [`1`, `2`],
+  3: [`1`, `2`, `3`],
+  100: [`0`]
+};
+const ADDRESS = AD_FORM.querySelector(`[name='address']`);
+const PIN_SIZE = {
+  width: 50,
+  height: 70};
 const PIN_TEMPLATE = document.querySelector(`#pin`)
   .content
   .querySelector(`button`);
@@ -33,8 +55,34 @@ let getRandomArray = (arr) => {
   return newArray;
 };
 
-let removeClass = (element, className, removableClassName) => {
-  element.querySelector(className).classList.remove(removableClassName);
+let disableElementsTumbler = (arr, mode) => {
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].disabled = mode;
+
+    if (mode === true) {
+      arr[i].style.cursor = `default`;
+    }
+  }
+};
+
+let showElement = (elementClassName, removableClassName) => {
+  elementClassName.classList.remove(removableClassName);
+};
+
+let activatePage = (evt) => {
+  if (evt.button === 0 || evt.key === `Enter`) {
+    showElement(MAP, MAP_TUMBLER);
+    disableElementsTumbler(MAP_FILTERS_CHILDS, false);
+    disableElementsTumbler(AD_FORM_FILDSETS, false);
+    showElement(AD_FORM, AD_FORM_TUMBLER);
+  }
+};
+
+let getAddress = () => {
+  const x = MAP_PIN_MAIN.offsetLeft + PIN_SIZE.width / 2;
+  const y = MAP_PIN_MAIN.offsetTop + PIN_SIZE.height;
+
+  return `${x}, ${y}`;
 };
 
 let getAvatar = (num) => {
@@ -66,7 +114,7 @@ let renderOffersList = (num) => {
       },
       "offer": {
         "title": `Уютная квартира в центре Кексограда`,
-        "address": locationX + `, ` + locationY,
+        "address": `${locationX }, ${locationY}`,
         "price": getPrice(getRandomNumber(9) + i),
         "type": getRandomElement(PLACE_TYPE),
         "rooms": getRandomNumber(3) + 1,
@@ -110,4 +158,51 @@ for (let i = 0; i < offersList.length; i++) {
 MAP_PINS.appendChild(FRAGMENT);
 // console.log(MAP_PINS.children);
 
-removeClass(document, MAP, MAP_TUMBLER);
+ADDRESS.value = getAddress();
+
+disableElementsTumbler(MAP_FILTERS_CHILDS, true);
+disableElementsTumbler(AD_FORM_FILDSETS, true);
+
+MAP_PIN_MAIN.addEventListener(`mousedown`, activatePage);
+MAP_PIN_MAIN.addEventListener(`keydown`, activatePage);
+
+// validation
+
+AD_FORM.type.addEventListener(`input`, () => {
+  AD_FORM.price.min = AD_FORM_MIN_PRICE[AD_FORM.type.value];
+  AD_FORM.price.placeholder = AD_FORM_MIN_PRICE[AD_FORM.type.value];
+
+  if (AD_FORM.price.value < AD_FORM_MIN_PRICE[AD_FORM.type.value]) {
+    AD_FORM.price.setCustomValidity(`Недопустимая цена`);
+  } else {
+    AD_FORM.price.setCustomValidity(``);
+  }
+
+  AD_FORM.price.reportValidity();
+});
+
+AD_FORM.timein.addEventListener(`input`, (evt) => {
+  if (evt.target === AD_FORM.timein) {
+    AD_FORM.timeout.value = AD_FORM.timein.value;
+  } else {
+    AD_FORM.timein.value = AD_FORM.timeout.value;
+  }
+});
+
+AD_FORM.timeout.addEventListener(`input`, (evt) => {
+  if (evt.target === AD_FORM.timeout) {
+    AD_FORM.timein.value = AD_FORM.timeout.value;
+  } else {
+    AD_FORM.timeout.value = AD_FORM.timein.value;
+  }
+});
+
+AD_FORM.capacity.addEventListener(`input`, () => {
+  if (ROOMS_FOR_GUESTS[AD_FORM.rooms.value].includes(AD_FORM.capacity.value)) {
+    AD_FORM.capacity.setCustomValidity(``);
+  } else {
+    AD_FORM.capacity.setCustomValidity(`Недопустимое количество гостей`);
+  }
+
+  AD_FORM.capacity.reportValidity();
+});
