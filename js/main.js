@@ -22,17 +22,38 @@
     }
   };
 
-  let offersList = window.mock.renderOffersList(OFFERS_NUMBER);
-
-  for (let i = 0; i < offersList.length; i++) {
-    FRAGMENT.appendChild(window.pin.renderPin(offersList[i]));
-  }
-
-  MAP_PINS.appendChild(FRAGMENT);
-
   window.util.disableElementsTumbler(MAP_FILTERS_CHILDS, true);
   window.util.disableElementsTumbler(AD_FORM_FILDSETS, true);
 
   MAP_PIN_MAIN.addEventListener(`mousedown`, activatePage);
   MAP_PIN_MAIN.addEventListener(`keydown`, activatePage);
+
+  const successHandler = (offers) => {
+    if (offers.length >= OFFERS_NUMBER) {
+      for (let i = 0; i < OFFERS_NUMBER; i++) {
+        FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
+      }
+    } else {
+      for (let i = 0; i < offers.length; i++) {
+        FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
+      }
+    }
+
+    MAP_PINS.appendChild(FRAGMENT);
+  };
+
+  const errorHandler = (errorMessage) => {
+    const node = document.createElement(`div`);
+
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
+    node.style.position = `absolute`;
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = `30px`;
+    node.textContent = errorMessage;
+
+    document.body.insertAdjacentElement(`afterbegin`, node);
+  };
+
+  window.backend.load(successHandler, errorHandler);
 })();

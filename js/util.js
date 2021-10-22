@@ -10,12 +10,17 @@
       return arr[Math.round(Math.random() * Math.round(arr.length - 1))];
     },
 
-    getRandomArray(arr) {
-      let newArray = [];
+    getRandomArray(num, arr) {
+      let randomArr = [];
 
-      newArray = arr.slice(window.util.getRandomNumber(arr.length - 1));
+      for (let i = 0; i < num; i++) {
+        let newIndex = window.util.getRandomNumber(arr.length - 1);
 
-      return newArray;
+        randomArr.push(arr[newIndex]);
+        arr.splice(newIndex, 1);
+      }
+
+      return randomArr;
     },
 
     disableElementsTumbler(arr, mode) {
