@@ -1,11 +1,12 @@
 'use strict';
 
 (() => {
+  const RequestMethod = {
+    GET: `GET`,
+    POST: `POST`
+  };
   const RequestURL = {
-    // GET: `https://21.javascript.pages.academy/keksobooking`, ???
     GET: `https://21.javascript.pages.academy/keksobooking/data`,
-
-    // POST: `https://21.javascript.pages.academy/keksobooking/data` ???
     POST: `https://21.javascript.pages.academy/keksobooking`
   };
   const StatusCode = {
@@ -14,15 +15,11 @@
   const TIMEOUT_IN_MS = 10000;
   // const TIMEOUT_IN_MS = 1;
 
-  const RequestMethod = {
-    GET: `GET`,
-    POST: `POST`
-  };
-
   const statusHandler = (xhr, onLoad, onError) => {
     xhr.addEventListener(`load`, () => {
       if (xhr.status === StatusCode.OK) {
         onLoad(xhr.response);
+        // console.log(xhr.response);
       } else {
         onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
       }
