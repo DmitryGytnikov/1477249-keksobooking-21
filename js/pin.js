@@ -19,7 +19,7 @@
       PIN_ELEMENT.addEventListener(`click`, () => {
         const MAP_CARD = window.const.MAP.querySelector(`.map__card`);
 
-        if (MAP_CARD !== null) {
+        if (MAP_CARD) {
           MAP_CARD.remove();
         }
 

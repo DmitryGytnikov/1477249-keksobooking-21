@@ -1,7 +1,10 @@
 'use strict';
 
 (() => {
+  const MAP_PINS = document.querySelector(`.map__pins`);
+  const FRAGMENT = document.createDocumentFragment();
   const CARD_POPUP = document.querySelector(`#card`).content.querySelector(`.popup`);
+  const MAX_OFFERS_NUMBER = 5;
 
   window.offer = {
     renderOffer(offer) {
@@ -48,23 +51,45 @@
         window.util.showElement(Offer.FEATURES.querySelector(`.popup__feature--` + feature), window.const.TUMBLER);
       });
 
-      OFFER_CLOSE.addEventListener(`click`, () => {
-        window.util.hideElement(OFFER_ELEMENT, window.const.TUMBLER);
+      window.offer.closeOffer(OFFER_ELEMENT, OFFER_CLOSE);
+
+      return OFFER_ELEMENT;
+    },
+
+    closeOffer(element, button) {
+      button.addEventListener(`click`, () => {
+        window.util.hideElement(element, window.const.TUMBLER);
       });
 
-      OFFER_CLOSE.addEventListener(`keydown`, (evt) => {
+      button.addEventListener(`keydown`, (evt) => {
         if (evt.key === `Enter`) {
-          window.util.hideElement(OFFER_ELEMENT, window.const.TUMBLER);
+          window.util.hideElement(element, window.const.TUMBLER);
         }
+      });
+
+      window.const.MAP_FILTERS.addEventListener(`change`, () => {
+        window.util.hideElement(element, window.const.TUMBLER);
       });
 
       document.addEventListener(`keydown`, (evt) => {
         if (evt.key === `Escape`) {
-          window.util.hideElement(OFFER_ELEMENT, window.const.TUMBLER);
+          window.util.hideElement(element, window.const.TUMBLER);
         }
       });
-
-      return OFFER_ELEMENT;
     },
+
+    renderOffers(offers) {
+      if (offers.length >= MAX_OFFERS_NUMBER) {
+        for (let i = 0; i < MAX_OFFERS_NUMBER; i++) {
+          FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
+        }
+      } else {
+        for (let i = 0; i < offers.length; i++) {
+          FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
+        }
+      }
+
+      MAP_PINS.appendChild(FRAGMENT);
+    }
   };
 })();

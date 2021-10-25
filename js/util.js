@@ -54,6 +54,14 @@
       document.body.insertAdjacentElement(`afterbegin`, node);
     },
 
+    removePins() {
+      const PINS = window.const.MAP.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+
+      PINS.forEach((element) => {
+        element.remove();
+      });
+    },
+
     noop() {},
   };
 })();
