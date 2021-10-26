@@ -55,6 +55,6 @@
 
     const DATA = new FormData(window.const.AD_FORM);
 
-    window.backend.save(DATA, successFormHandler, showErrorMessage);
+    window.backend.saveData(DATA, successFormHandler, showErrorMessage);
   });
 })();

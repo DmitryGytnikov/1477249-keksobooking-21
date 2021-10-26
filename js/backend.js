@@ -46,13 +46,15 @@
     return xhr;
   };
 
-  window.backend = {
-    load(onLoad, onError) {
-      makeRequest(RequestMethod.GET, RequestURL.GET, onLoad, onError).send();
-    },
+  let loadData = (onLoad, onError) => {
+    makeRequest(RequestMethod.GET, RequestURL.GET, onLoad, onError).send();
+  };
 
-    save(data, onLoad, onError) {
-      makeRequest(RequestMethod.POST, RequestURL.POST, onLoad, onError).send(data);
-    },
+  let saveData = (data, onLoad, onError) => {
+    makeRequest(RequestMethod.POST, RequestURL.POST, onLoad, onError).send(data);
+  };
+  window.backend = {
+    loadData,
+    saveData
   };
 })();
