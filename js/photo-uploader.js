@@ -1,4 +1,5 @@
 'use strict';
+
 const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`, `svg`];
 
 const FileChooser = {
