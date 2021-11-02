@@ -85,10 +85,10 @@
     <section class="notice">
       <h2 class="notice__title">Ваше объявление</h2>
       <form class="ad-form ad-form--disabled"
-        method="post"
-        action="https://21.javascript.pages.academy/keksobooking"
-        enctype="multipart/form-data"
-        autocomplete="off">
+            method="post"
+            action="https://21.javascript.pages.academy/keksobooking"
+            enctype="multipart/form-data"
+            autocomplete="off">
         <fieldset class="ad-form-header">
           <legend class="ad-form-header__title">Ваша фотография (для карты)</legend>
           <div class="ad-form-header__upload">
@@ -218,12 +218,12 @@
       <p class="popup__text popup__text--capacity">2 комнаты для 3 гостей</p>
       <p class="popup__text popup__text--time">Заезд после 14:00, выезд до 10:00</p>
       <ul class="popup__features">
-        <li class="popup__feature popup__feature--wifi hidden"></li>
-        <li class="popup__feature popup__feature--dishwasher hidden"></li>
-        <li class="popup__feature popup__feature--parking hidden"></li>
-        <li class="popup__feature popup__feature--washer hidden"></li>
-        <li class="popup__feature popup__feature--elevator hidden"></li>
-        <li class="popup__feature popup__feature--conditioner hidden"></li>
+        <li class="popup__feature popup__feature--wifi"></li>
+        <li class="popup__feature popup__feature--dishwasher"></li>
+        <li class="popup__feature popup__feature--parking"></li>
+        <li class="popup__feature popup__feature--washer"></li>
+        <li class="popup__feature popup__feature--elevator"></li>
+        <li class="popup__feature popup__feature--conditioner"></li>
       </ul>
       <p class="popup__description">Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.</p>
       <div class="popup__photos">
@@ -234,9 +234,7 @@
 
   <!-- Метка объявления -->
   <template id="pin">
-    <button type="button" class="map__pin" style="left: 200px; top: 400px;">
-      <img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления" tabindex="0">
-    </button>
+    <button type="button" class="map__pin" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления" tabindex="0"></button>
   </template>
 
   <!-- Сообщение об успешном создании объявления -->
@@ -254,20 +252,6 @@
     </div>
   </template>
 
-  <!-- <script src="js/util.js"></script> -->
-  <!-- <script src="js/mock.js"></script> -->
-  <!-- <script src="js/backend.js"></script> -->
-  <!-- <script src="js/data.js"></script> -->
-  <!-- <script src="js/const.js"></script>
-  <script src="js/debounce.js"></script>
-  <script src="js/filter.js"></script>
-  <script src="js/pin.js"></script>
-  <script src="js/photo-uploader.js"></script>
-  <script src="js/offer.js"></script>
-  <script src="js/move-pin.js"></script>
-  <script src="js/form-send.js"></script>
-  <script src="js/form-validation.js"></script>
-  <script src="js/main.js"></script> -->
   <script src="bundle.js"></script>
 </body>
 </html>

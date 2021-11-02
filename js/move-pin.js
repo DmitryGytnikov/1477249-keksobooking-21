@@ -1,23 +1,51 @@
 'use strict';
 
+const map = document.querySelector(`.map`);
+const mapPinMain = document.querySelector(`.map__pin--main`);
+const adForm = document.querySelector(`.ad-form`);
+const address = adForm.querySelector(`[name='address']`);
+
 const PinSize = {
-  halfWidth: 32,
-  height: 70
+  RADIUS: 31,
+  HEIGHT: 87,
+  ACTIVE_HEIGHT: 195
 };
 const YLimit = {
   MIN: 130,
   MAX: 630
 };
 const XLimit = {
-  MIN: 0 - PinSize.halfWidth,
-  MAX: window.const.MAP.clientWidth
+  MIN: 0 - PinSize.RADIUS,
+  MAX: map.clientWidth
 };
 
-let setAddress = (element, x, y) => {
-  element.setAttribute(`value`, x + `, ` + y);
+const StartPinCoord = {
+  X: 570,
+  Y: 375
 };
 
-window.const.MAP_PIN_MAIN.addEventListener(`mousedown`, (evt) => {
+const DefaultPinCoord = {
+  X: StartPinCoord.X + PinSize.RADIUS,
+  Y: StartPinCoord.Y + PinSize.HEIGHT
+};
+
+let pinAddressX = parseInt(mapPinMain.style.left, 10) + PinSize.RADIUS;
+let pinAddressY = parseInt(mapPinMain.style.left, 10) - (PinSize.ACTIVE_HEIGHT - PinSize.RADIUS);
+
+const setAddress = (x = DefaultPinCoord.X, y = DefaultPinCoord.Y) => {
+  address.setAttribute(`value`, `${x}, ${y}`);
+};
+
+setAddress(pinAddressX, pinAddressY);
+
+const resetMapPinMain = () => {
+  mapPinMain.style.left = `${StartPinCoord.X}px`;
+  mapPinMain.style.top = `${(StartPinCoord.X - PinSize.ACTIVE_HEIGHT)}px`;
+
+  setAddress(DefaultPinCoord.X, StartPinCoord.Y + PinSize.RADIUS);
+};
+
+mapPinMain.addEventListener(`mousedown`, (evt) => {
   evt.preventDefault();
 
   let startCoords = {
@@ -25,46 +53,46 @@ window.const.MAP_PIN_MAIN.addEventListener(`mousedown`, (evt) => {
     y: evt.clientY
   };
 
-  let pinAddressX = parseInt(window.const.MAP_PIN_MAIN.style.left, 10) + PinSize.halfWidth;
-  let pinAddressY = parseInt(window.const.MAP_PIN_MAIN.style.top, 10) + PinSize.height;
-
-  setAddress(window.const.ADDRESS, pinAddressX, pinAddressY);
-
-  let onMouseMove = (moveEvt) => {
+  let mouseMoveHandler = (moveEvt) => {
     let shift = {
       x: startCoords.x - moveEvt.clientX,
       y: startCoords.y - moveEvt.clientY
     };
 
-    let coordX = window.const.MAP_PIN_MAIN.offsetLeft - shift.x;
-    let coordY = window.const.MAP_PIN_MAIN.offsetTop - shift.y;
+    let coordX = mapPinMain.offsetLeft - shift.x;
+    let coordY = mapPinMain.offsetTop - shift.y;
 
     startCoords = {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
 
-    if (coordX >= XLimit.MIN && coordX + PinSize.halfWidth <= XLimit.MAX) {
-      window.const.MAP_PIN_MAIN.style.left = coordX + `px`;
+    if (coordX >= XLimit.MIN && coordX + PinSize.RADIUS <= XLimit.MAX) {
+      mapPinMain.style.left = `${coordX}px`;
     }
 
-    if (coordY + PinSize.height >= YLimit.MIN && coordY + PinSize.height <= YLimit.MAX) {
-      window.const.MAP_PIN_MAIN.style.top = coordY + `px`;
+    if (coordY + PinSize.HEIGHT >= YLimit.MIN && coordY + PinSize.HEIGHT <= YLimit.MAX) {
+      mapPinMain.style.top = `${coordY}px`;
     }
 
-    pinAddressX = parseInt(window.const.MAP_PIN_MAIN.style.left, 10) + PinSize.halfWidth;
-    pinAddressY = parseInt(window.const.MAP_PIN_MAIN.style.top, 10) + PinSize.height;
+    pinAddressX = parseInt(mapPinMain.style.left, 10) + PinSize.RADIUS;
+    pinAddressY = parseInt(mapPinMain.style.top, 10) + PinSize.HEIGHT;
 
-    setAddress(window.const.ADDRESS, pinAddressX, pinAddressY);
+    setAddress(pinAddressX, pinAddressY);
   };
 
-  let onMouseUp = (upEvt) => {
+  let mouseUpHandler = (upEvt) => {
     upEvt.preventDefault();
 
-    document.removeEventListener(`mousemove`, onMouseMove);
-    document.removeEventListener(`mouseup`, onMouseUp);
+    document.removeEventListener(`mousemove`, mouseMoveHandler);
+    document.removeEventListener(`mouseup`, mouseUpHandler);
   };
 
-  document.addEventListener(`mousemove`, onMouseMove);
-  document.addEventListener(`mouseup`, onMouseUp);
+  document.addEventListener(`mousemove`, mouseMoveHandler);
+  document.addEventListener(`mouseup`, mouseUpHandler);
 });
+
+window.movepin = {
+  resetMapPinMain,
+  setAddress
+};

@@ -1,5 +1,6 @@
 'use strict';
 
+const TIMEOUT_IN_MS = 10000;
 const RequestMethod = {
   GET: `GET`,
   POST: `POST`
@@ -11,14 +12,13 @@ const RequestURL = {
 const StatusCode = {
   OK: 200
 };
-const TIMEOUT_IN_MS = 10000;
 
 const statusHandler = (xhr, onLoad, onError) => {
   xhr.addEventListener(`load`, () => {
     if (xhr.status === StatusCode.OK) {
       onLoad(xhr.response);
     } else {
-      onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
+      onError(`Статус ответа: ${xhr.status} ${xhr.statusText}`);
     }
   });
 
@@ -27,7 +27,7 @@ const statusHandler = (xhr, onLoad, onError) => {
   });
 
   xhr.addEventListener(`timeout`, () => {
-    onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
+    onError(`Запрос не успел выполниться за ${xhr.timeout} мс`);
   });
 };
 

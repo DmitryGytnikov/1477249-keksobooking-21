@@ -1,58 +1,50 @@
 'use strict';
 
-const MAIN = document.querySelector(`main`);
-const AD_FORM_SUCCESS_MESSAGE = document.querySelector(`#success`).content.querySelector(`.success`);
-const AD_FORM_ERROR_MESSAGE = document.querySelector(`#error`).content.querySelector(`.error`);
+const main = document.querySelector(`main`);
+const adForm = document.querySelector(`.ad-form`);
+const adFormSuccessMessage = document.querySelector(`#success`).content.querySelector(`.success`);
+const adFormErrorMessage = document.querySelector(`#error`).content.querySelector(`.error`);
+let removableMessage;
 
-let showSuccessMessage = () => {
-  const AD_FORM_SUCCESS_MESSAGE_ELEMENT = AD_FORM_SUCCESS_MESSAGE.cloneNode(true);
-
-  MAIN.appendChild(AD_FORM_SUCCESS_MESSAGE_ELEMENT);
-
-  document.addEventListener(`keydown`, (evt) => {
-    if (evt.key === `Escape`) {
-      window.util.hideElement(AD_FORM_SUCCESS_MESSAGE_ELEMENT, `hidden`);
-    }
-  });
-
-  document.addEventListener(`click`, () => {
-    window.util.hideElement(AD_FORM_SUCCESS_MESSAGE_ELEMENT, `hidden`);
-  });
+const messageCloseHandler = (evt) => {
+  if (evt.key !== `Escape` && evt.button !== 0) {
+    return;
+  }
+  removableMessage.remove();
+  document.removeEventListener(`keydown`, messageCloseHandler);
 };
 
-let showErrorMessage = () => {
-  const AD_FORM_ERROR_MESSAGE_ELEMENT = AD_FORM_ERROR_MESSAGE.cloneNode(true);
+const show = (message) => {
+  const adFormSuccessMessageElement = message.cloneNode(true);
+  removableMessage = adFormSuccessMessageElement;
+  main.appendChild(adFormSuccessMessageElement);
 
-  MAIN.appendChild(AD_FORM_ERROR_MESSAGE_ELEMENT);
+  document.addEventListener(`keydown`, messageCloseHandler);
 
-  const AD_FORM_ERROR_BUTTON = document.querySelector(`.error__button`);
+  document.addEventListener(`click`, messageCloseHandler);
 
-  AD_FORM_ERROR_BUTTON.addEventListener(`click`, () => {
-    window.util.hideElement(AD_FORM_ERROR_MESSAGE_ELEMENT, `hidden`);
-  });
+  if (message === adFormErrorMessage) {
+    const adFormErrorButton = document.querySelector(`.error__button`);
 
-  document.addEventListener(`keydown`, (evt) => {
-    if (evt.key === `Escape`) {
-      window.util.hideElement(AD_FORM_ERROR_MESSAGE_ELEMENT, `hidden`);
-    }
-  });
+    adFormErrorButton.addEventListener(`click`, messageCloseHandler);
+  }
+};
 
-  document.addEventListener(`click`, () => {
-    window.util.hideElement(AD_FORM_ERROR_MESSAGE_ELEMENT, `hidden`);
-  });
+const errorFormHandler = () => {
+  show(adFormErrorMessage);
 };
 
 const successFormHandler = () => {
-  showSuccessMessage();
+  show(adFormSuccessMessage);
 
-  window.const.AD_FORM.reset();
+  adForm.reset();
   window.main.deactivatePage();
 };
 
-window.const.AD_FORM.addEventListener(`submit`, (evt) => {
+adForm.addEventListener(`submit`, (evt) => {
   evt.preventDefault();
 
-  const DATA = new FormData(window.const.AD_FORM);
+  const data = new FormData(adForm);
 
-  window.backend.saveData(DATA, successFormHandler, showErrorMessage);
+  window.backend.saveData(data, successFormHandler, errorFormHandler);
 });

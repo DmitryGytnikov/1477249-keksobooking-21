@@ -1,97 +1,106 @@
 'use strict';
 
-const MAP_PINS = document.querySelector(`.map__pins`);
-const FRAGMENT = document.createDocumentFragment();
-const CARD_POPUP = document.querySelector(`#card`).content.querySelector(`.popup`);
 const MAX_OFFERS_NUMBER = 5;
 
-let closeOffer = (element, button) => {
-  button.addEventListener(`click`, () => {
-    window.util.hideElement(element, window.const.TUMBLER);
-  });
+const mapPins = document.querySelector(`.map__pins`);
+const fragment = document.createDocumentFragment();
+const cardPopup = document.querySelector(`#card`).content.querySelector(`.popup`);
+const mapFilters = document.querySelector(`.map__filters`);
+let removableOffer;
 
-  button.addEventListener(`keydown`, (evt) => {
-    if (evt.key === `Enter`) {
-      window.util.hideElement(element, window.const.TUMBLER);
-    }
-  });
-
-  window.const.MAP_FILTERS.addEventListener(`change`, () => {
-    window.util.hideElement(element, window.const.TUMBLER);
-  });
-
-  document.addEventListener(`keydown`, (evt) => {
-    if (evt.key === `Escape`) {
-      window.util.hideElement(element, window.const.TUMBLER);
-    }
-  });
+const popupCloseHandler = (evt) => {
+  if (evt.key !== `Escape` && evt.button !== 0 && evt.change) {
+    return;
+  }
+  removableOffer.remove();
+  window.pin.removeClassActive();
+  document.removeEventListener(`keydown`, popupCloseHandler);
 };
 
-let renderOffer = (offer) => {
-  const OFFER_ELEMENT = CARD_POPUP.cloneNode(true);
+const render = (offer) => {
+  const offerElement = cardPopup.cloneNode(true);
   const Offer = {
-    TITLE: OFFER_ELEMENT.querySelector(`.popup__title`),
-    ADDRESS: OFFER_ELEMENT.querySelector(`.popup__text--address`),
-    PRICE: OFFER_ELEMENT.querySelector(`.popup__text--price`),
-    TYPE: OFFER_ELEMENT.querySelector(`.popup__type`),
-    CAPACITY: OFFER_ELEMENT.querySelector(`.popup__text--capacity`),
-    TIME: OFFER_ELEMENT.querySelector(`.popup__text--time`),
-    FEATURES: OFFER_ELEMENT.querySelector(`.popup__features`),
-    DESCRIPTION: OFFER_ELEMENT.querySelector(`.popup__description`),
-    AVATAR: OFFER_ELEMENT.querySelector(`.popup__avatar`),
-    PHOTOS: OFFER_ELEMENT.querySelector(`.popup__photos`),
+    TITLE: offerElement.querySelector(`.popup__title`),
+    ADDRESS: offerElement.querySelector(`.popup__text--address`),
+    PRICE: offerElement.querySelector(`.popup__text--price`),
+    TYPE: offerElement.querySelector(`.popup__type`),
+    CAPACITY: offerElement.querySelector(`.popup__text--capacity`),
+    TIME: offerElement.querySelector(`.popup__text--time`),
+    FEATURES: offerElement.querySelector(`.popup__features`),
+    FEATURE_LIST: offerElement.querySelectorAll(`.popup__feature`),
+    DESCRIPTION: offerElement.querySelector(`.popup__description`),
+    AVATAR: offerElement.querySelector(`.popup__avatar`),
+    PHOTOS: offerElement.querySelector(`.popup__photos`),
   };
-  const PHOTO_ITEM = Offer.PHOTOS.querySelector(`.popup__photo`);
+  const photoItem = Offer.PHOTOS.querySelector(`.popup__photo`);
   const OfferTypes = {
     flat: `Квартира`,
     bungalow: `Бунгало`,
     house: `Дом`,
     palace: `Дворец`,
   };
-  const OFFER_CLOSE = OFFER_ELEMENT.querySelector(`.popup__close`);
+
   Offer.ADDRESS.textContent = offer.offer.address;
-  Offer.PRICE.textContent = offer.offer.price.toLocaleString() + ` ₽/ночь`;
+  Offer.PRICE.textContent = `${offer.offer.price.toLocaleString()} ₽/ночь`;
   Offer.TITLE.textContent = offer.offer.title;
-  Offer.CAPACITY.textContent = offer.offer.rooms + ` комнаты для ` + offer.offer.guests + ` гостей`;
-  Offer.TIME.textContent = `Заезд после ` + offer.offer.checkin + `, выезд до ` + offer.offer.checkout;
-  Offer.DESCRIPTION.textContent = offer.offer.description;
+  Offer.CAPACITY.textContent = `${offer.offer.rooms} комнаты для ${offer.offer.guests} гостей`;
+  Offer.TIME.textContent = `Заезд после ${offer.offer.checkin}, выезд до ${offer.offer.checkout}`;
   Offer.AVATAR.src = offer.author.avatar;
   Offer.TYPE.textContent = OfferTypes[offer.offer.type];
 
-  offer.offer.photos.forEach((photo) => {
-    const PHOTO = PHOTO_ITEM.cloneNode(true);
-
-    PHOTO.src = photo;
-    Offer.PHOTOS.appendChild(PHOTO);
-  });
-
-  PHOTO_ITEM.remove();
-
-  offer.offer.features.forEach((feature) => {
-    window.util.showElement(Offer.FEATURES.querySelector(`.popup__feature--` + feature), window.const.TUMBLER);
-  });
-
-  closeOffer(OFFER_ELEMENT, OFFER_CLOSE);
-
-  return OFFER_ELEMENT;
-};
-
-let renderOffers = (offers) => {
-  if (offers.length >= MAX_OFFERS_NUMBER) {
-    for (let i = 0; i < MAX_OFFERS_NUMBER; i++) {
-      FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
-    }
+  if (offer.offer.description) {
+    Offer.DESCRIPTION.textContent = offer.offer.description;
   } else {
-    for (let i = 0; i < offers.length; i++) {
-      FRAGMENT.appendChild(window.pin.renderPin(offers[i]));
-    }
+    Offer.DESCRIPTION.remove();
   }
 
-  MAP_PINS.appendChild(FRAGMENT);
+  if (offer.offer.photos.length > 0) {
+    offer.offer.photos.forEach((photo) => {
+      const photoElement = photoItem.cloneNode(true);
+
+      photoElement.src = photo;
+      Offer.PHOTOS.appendChild(photoElement);
+    });
+    photoItem.remove();
+  } else {
+    Offer.PHOTOS.remove();
+  }
+
+  if (offer.offer.features.length > 0) {
+    Offer.FEATURE_LIST.forEach((feature) => {
+      const offersFeatures = offer.offer.features.some((chosenFeature) => {
+        return feature.className.endsWith(`--${chosenFeature}`);
+      });
+      if (!offersFeatures) {
+        feature.remove();
+      }
+    });
+  } else {
+    Offer.FEATURES.remove();
+  }
+
+  const offerClose = offerElement.querySelector(`.popup__close`);
+
+  removableOffer = offerElement;
+  document.addEventListener(`keydown`, popupCloseHandler);
+  offerClose.addEventListener(`click`, popupCloseHandler);
+  offerClose.addEventListener(`keydown`, popupCloseHandler);
+  mapFilters.addEventListener(`change`, popupCloseHandler);
+
+  return offerElement;
+};
+
+const renderMany = (offers) => {
+  const num = Math.min(offers.length, MAX_OFFERS_NUMBER);
+
+  for (let i = 0; i < num; i++) {
+    fragment.appendChild(window.pin.render(offers[i]));
+  }
+
+  mapPins.appendChild(fragment);
 };
 
 window.offer = {
-  closeOffer,
-  renderOffer,
-  renderOffers
+  render,
+  renderMany
 };

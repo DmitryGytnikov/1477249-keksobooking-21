@@ -1,57 +1,73 @@
 'use strict';
 
-const MAP_TUMBLER = `map--faded`;
-const MAP_FILTERS = document.querySelector(`.map__filters`);
-const MAP_FEATURES = document.querySelector(`.map__features`);
-const MAP_FILTERS_CHILDS = Array.from(MAP_FILTERS.children);
-const MAP_FILTERS_FEATURES = Array.from(MAP_FEATURES.children);
-const AD_FORM_FILDSETS = Array.from(window.const.AD_FORM.querySelectorAll(`.ad-form > fieldset`));
-const AD_FORM_TUMBLER = `ad-form--disabled`;
-
-let activatePage = (evt) => {
-  if (evt.button === 0 || evt.key === `Enter`) {
-    window.util.showElement(window.const.MAP, MAP_TUMBLER);
-    window.util.disableElements(AD_FORM_FILDSETS, false);
-    window.util.showElement(window.const.AD_FORM, AD_FORM_TUMBLER);
-  }
-
-  if (window.const.MAP.querySelectorAll(`.map__pin`).length >= 2) {
-    window.util.disableElements(MAP_FILTERS_CHILDS, false);
-    window.util.disableElements(MAP_FILTERS_FEATURES, false);
-  }
-};
-
-let deactivatePage = () => {
-  window.util.hideElement(window.const.MAP, MAP_TUMBLER);
-  window.util.disableElements(MAP_FILTERS_CHILDS, true);
-  window.util.disableElements(MAP_FILTERS_FEATURES, true);
-  window.util.disableElements(AD_FORM_FILDSETS, true);
-  window.util.hideElement(window.const.AD_FORM, AD_FORM_TUMBLER);
-};
-
-window.util.disableElements(MAP_FILTERS_CHILDS, true);
-window.util.disableElements(AD_FORM_FILDSETS, true);
-window.util.disableElements(MAP_FILTERS_FEATURES, true);
-
-window.const.MAP_PIN_MAIN.addEventListener(`mousedown`, activatePage);
-window.const.MAP_PIN_MAIN.addEventListener(`keydown`, activatePage);
+const MAP_FADED = `map--faded`;
+const AD_FORM_DISABLED = `ad-form--disabled`;
+const map = document.querySelector(`.map`);
+const mapPinMain = document.querySelector(`.map__pin--main`);
+const mapFilters = document.querySelector(`.map__filters`);
+const mapFiltersChilds = Array.from(mapFilters.children);
+const mapFeatures = document.querySelector(`.map__features`);
+const mapFiltersFeatures = Array.from(mapFeatures.children);
+const adForm = document.querySelector(`.ad-form`);
+const adFormFildsets = Array.from(adForm.querySelectorAll(`.ad-form > fieldset`));
+const resetBtn = adForm.querySelector(`.ad-form__reset`);
+const avatarPreview = adForm.querySelector(`.ad-form-header__preview img`);
+const housePhotoPreview = adForm.querySelector(`.ad-form__photo img`);
+const defaultImg = `img/muffin-grey.svg`;
 
 const successHandler = (offers) => {
-  window.util.disableElements(MAP_FILTERS_CHILDS, false);
-  window.util.disableElements(MAP_FILTERS_FEATURES, false);
-
-  window.offer.renderOffers(offers);
-  window.filter.filterOffers(offers);
+  window.util.disableElements(mapFiltersChilds, false);
+  window.util.disableElements(mapFiltersFeatures, false);
+  window.offer.renderMany(offers);
+  window.filter.filter(offers);
 };
 
 const errorHandler = (errorMessage) => {
   window.util.createErrorMessage(errorMessage);
-
-  window.util.disableElements(MAP_FILTERS_CHILDS, true);
-  window.util.disableElements(MAP_FILTERS_FEATURES, true);
+  window.util.disableElements(mapFiltersChilds, true);
+  window.util.disableElements(mapFiltersFeatures, true);
 };
 
-window.backend.loadData(successHandler, errorHandler);
+const pageActivationHandler = (evt) => {
+  if (map.classList.contains(MAP_FADED) && evt.button === 0 || evt.key === `Enter`) {
+    window.backend.loadData(successHandler, errorHandler);
+    map.classList.remove(MAP_FADED);
+    adForm.classList.remove(AD_FORM_DISABLED);
+    window.util.disableElements(adFormFildsets, false);
+    window.movepin.setAddress();
+  }
+
+  if (map.querySelectorAll(`.map__pin`).length >= 2) {
+    window.util.disableElements(mapFiltersChilds, false);
+    window.util.disableElements(mapFiltersFeatures, false);
+  }
+};
+
+const deactivatePage = () => {
+  adForm.reset();
+  mapFilters.reset();
+  map.classList.add(MAP_FADED);
+  adForm.classList.add(AD_FORM_DISABLED);
+  window.formvalidation.reset();
+  window.util.removePins();
+  window.util.disableElements(mapFiltersChilds, true);
+  window.util.disableElements(mapFiltersFeatures, true);
+  window.util.disableElements(adFormFildsets, true);
+  window.movepin.resetMapPinMain();
+  avatarPreview.src = defaultImg;
+  housePhotoPreview.src = defaultImg;
+};
+
+resetBtn.addEventListener(`click`, () => {
+  deactivatePage();
+});
+
+window.util.disableElements(mapFiltersChilds, true);
+window.util.disableElements(adFormFildsets, true);
+window.util.disableElements(mapFiltersFeatures, true);
+
+mapPinMain.addEventListener(`mousedown`, pageActivationHandler);
+mapPinMain.addEventListener(`keydown`, pageActivationHandler);
 
 window.main = {
   deactivatePage

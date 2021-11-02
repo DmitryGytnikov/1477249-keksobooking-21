@@ -1,32 +1,49 @@
 'use strict';
 
-const PIN_TEMPLATE = document.querySelector(`#pin`)
+const PinSize = {
+  HALF_WIDTH: 25,
+  HEIGHT: 87
+};
+const pinTemplate = document.querySelector(`#pin`)
 .content
 .querySelector(`button`);
+const map = document.querySelector(`.map`);
+const mapPins = map.querySelector(`.map__pins`);
+const mapFilter = map.querySelector(`.map__filters-container`);
 
-let renderPin = (offer) => {
-  const PIN_ELEMENT = PIN_TEMPLATE.cloneNode(true);
-  const PIN_IMG = PIN_ELEMENT.querySelector(`img`);
+const removeClassActive = () => {
+  const pins = mapPins.querySelectorAll(`.map__pin`);
 
-  PIN_IMG.src = offer.author.avatar;
-  PIN_IMG.alt = offer.offer.title;
+  pins.forEach((pin)=>{
+    pin.classList.remove(`map__pin--active`);
+  });
+};
 
-  PIN_ELEMENT.style.left = `${offer.location.x - (PIN_ELEMENT.offsetWidth / 2)}px`;
-  PIN_ELEMENT.style.top = `${offer.location.y - PIN_ELEMENT.offsetHeight}px`;
+const render = (offer) => {
+  const pinElement = pinTemplate.cloneNode(true);
+  const pinImg = pinElement.querySelector(`img`);
 
-  PIN_ELEMENT.addEventListener(`click`, () => {
-    const MAP_CARD = window.const.MAP.querySelector(`.map__card`);
+  pinImg.src = offer.author.avatar;
+  pinImg.alt = offer.offer.title;
 
-    if (MAP_CARD) {
-      MAP_CARD.remove();
+  pinElement.style.left = `${offer.location.x - PinSize.HALF_WIDTH}px`;
+  pinElement.style.top = `${offer.location.y - PinSize.HEIGHT}px`;
+
+  pinElement.addEventListener(`click`, (evt) => {
+    const mapCard = map.querySelector(`.map__card`);
+
+    if (mapCard) {
+      mapCard.remove();
     }
-
-    window.const.MAP.insertBefore(window.offer.renderOffer(offer), window.const.MAP_FILTER);
+    map.insertBefore(window.offer.render(offer), mapFilter);
+    removeClassActive();
+    evt.currentTarget.classList.add(`map__pin--active`);
   });
 
-  return PIN_ELEMENT;
+  return pinElement;
 };
 
 window.pin = {
-  renderPin
+  render,
+  removeClassActive
 };

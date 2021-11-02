@@ -4,15 +4,14 @@ module.exports = {
   entry: [
     `./js/util.js`,
     `./js/backend.js`,
-    `./js/const.js`,
     `./js/debounce.js`,
     `./js/filter.js`,
     `./js/pin.js`,
-    `./js/photo-uploader.js`,
     `./js/offer.js`,
     `./js/move-pin.js`,
     `./js/form-send.js`,
     `./js/form-validation.js`,
+    `./js/photo-uploader.js`,
     `./js/main.js`
   ],
   output: {

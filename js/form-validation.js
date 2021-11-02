@@ -12,42 +12,56 @@ const RoomsForGuests = {
   3: [`1`, `2`, `3`],
   100: [`0`]
 };
+const adForm = document.querySelector(`.ad-form`);
 
-window.const.AD_FORM.price.addEventListener(`input`, () => {
-  window.const.AD_FORM.price.min = AdFormMinPrice[window.const.AD_FORM.type.value];
-  window.const.AD_FORM.price.placeholder = AdFormMinPrice[window.const.AD_FORM.type.value];
+const reset = () => {
+  adForm.price.placeholder = AdFormMinPrice.flat;
+};
 
-  if (window.const.AD_FORM.price.value < AdFormMinPrice[window.const.AD_FORM.type.value]) {
-    window.const.AD_FORM.price.setCustomValidity(`Недопустимая цена`);
+adForm.price.addEventListener(`input`, () => {
+  adForm.price.min = AdFormMinPrice[adForm.type.value];
+  adForm.price.placeholder = AdFormMinPrice[adForm.type.value];
+
+  if (adForm.price.value < AdFormMinPrice[adForm.type.value]) {
+    adForm.price.setCustomValidity(`Недопустимая цена`);
   } else {
-    window.const. AD_FORM.price.setCustomValidity(``);
+    adForm.price.setCustomValidity(``);
   }
 
-  window.const.AD_FORM.price.reportValidity();
+  adForm.price.reportValidity();
 });
 
-window.const.AD_FORM.timein.addEventListener(`input`, (evt) => {
-  if (evt.target === window.const.AD_FORM.timein) {
-    window.const.AD_FORM.timeout.value = window.const.AD_FORM.timein.value;
-  } else {
-    window.const.AD_FORM.timein.value = window.const.AD_FORM.timeout.value;
-  }
-});
-
-window.const.AD_FORM.timeout.addEventListener(`input`, (evt) => {
-  if (evt.target === window.const.AD_FORM.timeout) {
-    window.const.AD_FORM.timein.value = window.const.AD_FORM.timeout.value;
-  } else {
-    window.const.AD_FORM.timeout.value = window.const.AD_FORM.timein.value;
+adForm.type.addEventListener(`input`, (evt) => {
+  if (evt.target === adForm.type) {
+    adForm.price.placeholder = AdFormMinPrice[adForm.type.value];
   }
 });
 
-window.const.AD_FORM.capacity.addEventListener(`input`, () => {
-  if (RoomsForGuests[window.const.AD_FORM.rooms.value].includes(window.const.AD_FORM.capacity.value)) {
-    window.const.AD_FORM.capacity.setCustomValidity(``);
+adForm.timein.addEventListener(`input`, (evt) => {
+  if (evt.target === adForm.timein) {
+    adForm.timeout.value = adForm.timein.value;
   } else {
-    window.const.AD_FORM.capacity.setCustomValidity(`Недопустимое количество гостей`);
+    adForm.timein.value = adForm.timeout.value;
+  }
+});
+
+adForm.timeout.addEventListener(`input`, (evt) => {
+  if (evt.target === adForm.timeout) {
+    adForm.timein.value = adForm.timeout.value;
+  } else {
+    adForm.timeout.value = adForm.timein.value;
+  }
+});
+
+adForm.capacity.addEventListener(`input`, () => {
+  if (RoomsForGuests[adForm.rooms.value].includes(adForm.capacity.value)) {
+    adForm.capacity.setCustomValidity(``);
+  } else {
+    adForm.capacity.setCustomValidity(`Недопустимое количество гостей`);
   }
 
-  window.const.AD_FORM.capacity.reportValidity();
+  adForm.capacity.reportValidity();
 });
+window.formvalidation = {
+  reset
+};
